@@ -4,4 +4,4 @@
 // Since a realm can't know when these properties have been fulfilled, the user
 // needs to claim these badges when have reached the request
 
-package stackovergno
+package stackovergnotools
