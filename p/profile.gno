@@ -15,69 +15,9 @@ import (
 
 // Errors
 const (
-	ErrNoData = "No data of this user"
+	ErrNoData        = "No data of this user"
+	ErrRegisterFirst = "Register First!"
 )
-
-// Get the information of a given address
-func GetUser(addr string) string {
-	userInterface, ok := site.Get(addr)
-	if !ok {
-		return ""
-	}
-	user := userInterface.(Data)
-	userContent := outputInformation(user)
-	return userContent
-}
-
-// Stringifies the output
-// Based on future enhacements of realm output can be edited
-func outputInformation(user Data) string {
-	var output string
-	experience := ""
-	for _, e := range user.Experience {
-		experience += readJobExperience(e)
-	}
-
-	networks := readNetworks(user.Networks)
-	networkTitle := ""
-	if networks != "" {
-		networkTitle = "## Networks"
-	}
-	output += ufmt.Sprintf(`# %s
-<center>%s</center>
-<center>(%s)</center>
-
-%s
-%s
-
-## Experience
-%s`, user.Name, user.Description, user.Location, networkTitle, networks, experience)
-	return output
-}
-
-// Update certain data from the Data section of the user
-func UpdateData(name string, location string, description string) {
-	// You can only update your own id
-	caller := std.GetOrigCaller().String()
-	dataInterface, ok := site.Get(caller)
-	if !ok {
-		panic(ErrNoData)
-	}
-	data := dataInterface.(Data)
-	if name != "" && len(name) > 5 {
-		data.Name = name
-	}
-	if description != "" && len(description) > 5 {
-		data.Description = description
-	}
-	if location != "" {
-		data.Location = location
-	}
-	if description != "" {
-		data.Description = description
-	}
-	site.Set(caller, data)
-}
 
 // Contains the main components of the user
 type Data struct {
@@ -105,11 +45,64 @@ type JobExperience struct {
 	SkillsRequired avl.Tree // These have to match with the avl.Tree the member has in his Data. Otherwise has to update that first
 }
 
+// Update certain data from the Data section of the user
+func UpdateData(name, location, description string, site avl.Tree) {
+	// You can only update your own id
+	caller := std.GetOrigCaller().String()
+	dataInterface, ok := site.Get(caller)
+	if !ok {
+		panic(ErrNoData)
+	}
+	data := dataInterface.(Data)
+	if name != "" && len(name) > 5 {
+		data.Name = name
+	}
+	if description != "" && len(description) > 5 {
+		data.Description = description
+	}
+	if location != "" {
+		data.Location = location
+	}
+	if description != "" {
+		data.Description = description
+	}
+	site.Set(caller, data)
+}
+
 func updateNetwork(user Data, website string, path string) {
 	user.Networks.Set(website, path)
 }
 
-func GenerateJobExperience(current bool, Title string, EmploymentType string, Company string, Location string, StartDate string, EndDate string, Description string) JobExperience {
+// Add a job experience for yourself
+// The order will be done by the website
+func AddJob(current, Title, EmploymentType, Company, Location, StartDate, EndDate, JobDescription string, site avl.Tree) {
+	caller := std.GetOrigCaller().String()
+	userDataInterface, ok := site.Get(caller)
+	if !ok {
+		panic(ErrRegisterFirst)
+	}
+	userData := userDataInterface.(Data)
+	actual := false
+	if current != "" {
+		actual = true
+	}
+	newJob := generateJobExperience(Title, EmploymentType, Company, Location, StartDate, EndDate, JobDescription, actual)
+	Experience := append(userData.Experience, newJob)
+	userData.Experience = Experience
+	site.Set(caller, userData)
+}
+
+func AddNetwork(network, path string, site avl.Tree) {
+	caller := std.GetOrigCaller().String()
+	userInterface, ok := site.Get(caller)
+	if !ok {
+		panic(ErrNoData)
+	}
+	user := userInterface.(Data)
+	updateNetwork(user, network, path)
+}
+
+func generateJobExperience(Title, EmploymentType, Company, Location, StartDate, EndDate, Description string, current bool) JobExperience {
 	return JobExperience{
 		Title:          Title,
 		EmploymentType: EmploymentType,
@@ -120,26 +113,4 @@ func GenerateJobExperience(current bool, Title string, EmploymentType string, Co
 		Description:    Description,
 		Current:        current,
 	}
-}
-
-func readJobExperience(content JobExperience) string {
-	working := ""
-	if content.Current == true {
-		working = "(c)"
-	}
-	output := ufmt.Sprintf(`### >> %s at %s %s
-<code> (%s-%s) %s </code>
-#### About the job
-%s
-
-`, content.Title, content.Company, working, content.StartDate, content.EndDate, content.EmploymentType, content.Description)
-	return output
-}
-
-func readNetworks(networks avl.Tree) string {
-	output := ""
-	networks.Iterate("", "", func(key string, value interface{}) bool {
-		output += ufmt.Sprintf("[%s](%s)\n\n", key, value)
-	})
-	return output
 }

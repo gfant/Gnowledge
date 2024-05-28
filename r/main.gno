@@ -14,8 +14,7 @@ import (
 
 // Errors for commands
 var (
-	NoQuestionId     = "No Question with given Id"
-	ErrRegisterFirst = "Register First!"
+	NoQuestionId = "No Question with given Id"
 )
 
 // Variables to use in the realm
@@ -44,49 +43,19 @@ func Render(path string) string {
 	}
 	candidateAddress := std.Address(mainPart)
 	if len(candidateAddress) == 40 {
-		output += ReadProfile(mainPart)
+		output += ReadUser(mainPart)
 		return output
 	}
 	// TODO: Add a default website
-	return "Add more"
-}
-
-// Register yourself in the realm
-func Register() {
-	caller := std.GetOrigCaller().String()
-	site.Set(caller, stackovergnotools.Data{})
-}
-
-// Add a job experience for yourself
-// The order will be done by the website
-func AddJob(current string, Title string, EmploymentType string, Company string, Location string, StartDate string, EndDate string, JobDescription string) {
-	caller := std.GetOrigCaller().String()
-	userDataInterface, ok := site.Get(caller)
-	if !ok {
-		panic(ErrRegisterFirst)
-	}
-	userData := userDataInterface.(Data)
-	actual := false
-	if current != "" {
-		actual = true
-	}
-	newJob := GenerateJobExperience(actual, Title, EmploymentType, Company, Location, StartDate, EndDate, JobDescription)
-	Experience := append(userData.Experience, newJob)
-	userData.Experience = Experience
-	site.Set(caller, userData)
-}
-
-func AddNetwork(network, path string) {
-	caller := std.GetOrigCaller().String()
-	userInterface, ok := site.Get(caller)
-	if !ok {
-		panic(ErrNoData)
-	}
-	user := userInterface.(Data)
-	updateNetwork(user, network, path)
+	return ufmt.Sprintf("%d", Questions.Size())
 }
 
 func MakeQuestion(question, topics string) int {
+	caller := std.GetOrigCaller().String()
+	_, ok := site.Get(caller)
+	if !ok {
+		panic(stackovergnotools.ErrRegisterFirst)
+	}
 	topicsArr := strings.Split(topics, ",")
 	q := stackovergnotools.NewQuestion(question, topicsArr)
 	questionCounterString := strconv.Itoa(QuestionsCounter)
@@ -103,9 +72,4 @@ func ReadQuestionById(id string) string {
 	q := qInterface.(stackovergnotools.Question)
 	questionText := stackovergnotools.ReadFormattedQuestion(q)
 	return questionText
-}
-
-func ReadProfile(address string) string {
-	// TODO: Combine with gnokedin realm
-	return "fancy Prof"
 }
