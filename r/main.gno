@@ -14,7 +14,9 @@ import (
 
 // Errors for commands
 var (
-	NoQuestionId = "No Question with given Id"
+	NoQuestionId    = "No Question with given Id"
+	InvalidAction   = "Action not allowed"
+	UnexpectedError = "Unexpected Error"
 )
 
 // Variables to use in the realm
@@ -62,6 +64,38 @@ func MakeQuestion(question, topics string) int {
 	Questions.Set(questionCounterString, q)
 	QuestionsCounter++
 	return QuestionsCounter
+}
+
+func UpvoteQuestion(id int) {
+	caller := std.GetOrigCaller()
+	idStr := strconv.Itoa(id)
+	qInterface, ok := Questions.Get(idStr)
+	if !ok {
+		panic(NoQuestionId)
+	}
+	q := qInterface.(stackovergnotools.Question)
+	// Can't upvote your own question
+	if caller == q.Author {
+		panic(InvalidAction)
+	}
+	q.Score++
+	Questions.Set(idStr, q)
+}
+
+func DownvoteQuestion(id int) {
+	caller := std.GetOrigCaller()
+	idStr := strconv.Itoa(id)
+	qInterface, ok := Questions.Get(idStr)
+	if !ok {
+		panic(NoQuestionId)
+	}
+	q := qInterface.(stackovergnotools.Question)
+	// Can't upvote your own question
+	if caller == q.Author {
+		panic(InvalidAction)
+	}
+	q.Score--
+	Questions.Set(idStr, q)
 }
 
 func ReadQuestionById(id string) string {
