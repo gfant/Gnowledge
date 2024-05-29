@@ -15,6 +15,7 @@ import (
 // Errors for commands
 var (
 	NoQuestionId    = "No Question with given Id"
+	NoAnswerId      = "No Answer with given Id"
 	InvalidAction   = "Action not allowed"
 	UnexpectedError = "Unexpected Error"
 )
@@ -90,7 +91,7 @@ func DownvoteQuestion(id int) {
 		panic(NoQuestionId)
 	}
 	q := qInterface.(stackovergnotools.Question)
-	// Can't upvote your own question
+	// Can't downvote your own question
 	if caller == q.Author {
 		panic(InvalidAction)
 	}
@@ -106,4 +107,61 @@ func ReadQuestionById(id string) string {
 	q := qInterface.(stackovergnotools.Question)
 	questionText := stackovergnotools.ReadFormattedQuestion(q)
 	return questionText
+}
+
+func AnswerQuestion(response string, questionId int) {
+	id := strconv.Itoa(questionId)
+	qInterface, ok := Questions.Get(id)
+	if !ok {
+		panic(NoQuestionId)
+	}
+	q := qInterface.(stackovergnotools.Question)
+	q.AnswerQuestion(response)
+	Questions.Set(id, q)
+}
+
+func UpvoteAnswer(qId, aId int) {
+	caller := std.GetOrigCaller()
+	aIdStr := strconv.Itoa(aId)
+	qIdStr := strconv.Itoa(qId)
+	qInterface, ok := Questions.Get(qIdStr)
+	if !ok {
+		panic(NoQuestionId)
+	}
+	q := qInterface.(stackovergnotools.Question)
+	aInterface, ok := q.Answers.Get(aIdStr)
+	if !ok {
+		panic(NoAnswerId)
+	}
+	a := aInterface.(stackovergnotools.Answer)
+	// Can't downvote your own answer
+	if caller == a.Author {
+		panic(InvalidAction)
+	}
+	a.Score++
+	q.Answers.Set(aIdStr, a)
+	Questions.Set(qIdStr, q)
+}
+
+func DownvoteAnswer(qId, aId int) {
+	caller := std.GetOrigCaller()
+	aIdStr := strconv.Itoa(aId)
+	qIdStr := strconv.Itoa(qId)
+	qInterface, ok := Questions.Get(qIdStr)
+	if !ok {
+		panic(NoQuestionId)
+	}
+	q := qInterface.(stackovergnotools.Question)
+	aInterface, ok := q.Answers.Get(aIdStr)
+	if !ok {
+		panic(NoAnswerId)
+	}
+	a := aInterface.(stackovergnotools.Answer)
+	// Can't downvote your own answer
+	if caller == a.Author {
+		panic(InvalidAction)
+	}
+	a.Score--
+	q.Answers.Set(aIdStr, a)
+	Questions.Set(qIdStr, q)
 }
