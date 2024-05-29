@@ -35,6 +35,7 @@ func NewQuestion(question string, topics []string) Question {
 		Score:     1,
 		AnswersId: 1,
 		Author:    std.GetOrigCaller(),
+		Answers:   avl.Tree{},
 		Topics:    topics,
 		CreatedOn: time.Now(),
 	}

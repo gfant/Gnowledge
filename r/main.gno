@@ -39,7 +39,7 @@ func init() {
 func Render(path string) string {
 	var output string
 	if path == "" {
-		output += gnowledgetools.ReadAllPreviews(Questions)
+		output += gnowledgetools.ReadAllQuestionPreviews(Questions)
 		return output
 	}
 	parts := strings.Split(path, "/")
@@ -121,6 +121,7 @@ func AnswerQuestion(response string, questionId int) {
 	}
 	q := qInterface.(gnowledgetools.Question)
 	q.AnswerQuestion(response)
+	q.AnswersId++
 	Questions.Set(id, q)
 }
 

@@ -20,6 +20,11 @@ func ReadFormattedQuestion(q Question) string {
 	%d
   </div> <p style="padding-left:10px">%s</p></div>
 <p><small>by <a href="/r/dev/stackovergno:%s">%s</a>, on %s</small></p>`, q.Score, q.Question, q.Author.String(), q.Author.String(), q.CreatedOn.Format(time.RFC822))
+	if q.Answers.Size() > 0 {
+		output += strconv.Itoa(q.Answers.Size())
+		output += ReadAllAnswers(q.Answers)
+		output += "asdasdasdas"
+	}
 	return output
 }
 
@@ -32,7 +37,7 @@ func ReadPreviewQuestion(qId int, q Question) string {
 	return output
 }
 
-func ReadAllPreviews(tree avl.Tree) string {
+func ReadAllQuestionPreviews(tree avl.Tree) string {
 	var output string
 	tree.Iterate("", "", func(key string, valueInterface interface{}) bool {
 		value := valueInterface.(Question)
@@ -41,6 +46,23 @@ func ReadAllPreviews(tree avl.Tree) string {
 			panic(ok)
 		}
 		output += ReadPreviewQuestion(qId, value) + "\n"
+		return false
+	})
+	return output
+}
+
+func ReadPreviewAnswer(answer Answer) string {
+	var output string
+	output += ufmt.Sprintf(`<p><%d> %s</p>
+	<p><small>by <a href="/r/dev/stackovergno:%s">%s</a>, on %s</small></p>`, answer.Score, answer.response, answer.Author, answer.Author, answer.CreatedOn)
+	return output
+}
+
+func ReadAllAnswers(answersTree avl.Tree) string {
+	var output string
+	answersTree.Iterate("", "", func(key string, valueInterface interface{}) bool {
+		value := valueInterface.(Answer)
+		output += ReadPreviewAnswer(value) + "\n"
 		return false
 	})
 	return output
