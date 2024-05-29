@@ -39,6 +39,7 @@ func init() {
 func Render(path string) string {
 	var output string
 	if path == "" {
+		output += `<h1>Gnowledge</h1>`
 		output += gnowledgetools.ReadAllQuestionPreviews(Questions)
 		return output
 	}

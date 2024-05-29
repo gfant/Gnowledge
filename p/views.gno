@@ -21,9 +21,9 @@ func ReadFormattedQuestion(q Question) string {
   </div> <p style="padding-left:10px">%s</p></div>
 <p><small>by <a href="/r/dev/stackovergno:%s">%s</a>, on %s</small></p>`, q.Score, q.Question, q.Author.String(), q.Author.String(), q.CreatedOn.Format(time.RFC822))
 	if q.Answers.Size() > 0 {
-		output += strconv.Itoa(q.Answers.Size())
+		number := strconv.Itoa(q.Answers.Size())
+		output += ufmt.Sprintf("<p>%s answers<p>", number)
 		output += ReadAllAnswers(q.Answers)
-		output += "asdasdasdas"
 	}
 	return output
 }
@@ -45,7 +45,7 @@ func ReadAllQuestionPreviews(tree avl.Tree) string {
 		if ok != nil {
 			panic(ok)
 		}
-		output += ReadPreviewQuestion(qId, value) + "\n"
+		output += ReadPreviewQuestion(qId, value) + "\n<hr/>"
 		return false
 	})
 	return output
@@ -53,7 +53,7 @@ func ReadAllQuestionPreviews(tree avl.Tree) string {
 
 func ReadPreviewAnswer(answer Answer) string {
 	var output string
-	output += ufmt.Sprintf(`<p><%d> %s</p>
+	output += ufmt.Sprintf(`<hr/><p><%d> %s</p>
 	<p><small>by <a href="/r/dev/stackovergno:%s">%s</a>, on %s</small></p>`, answer.Score, answer.response, answer.Author, answer.Author, answer.CreatedOn)
 	return output
 }
