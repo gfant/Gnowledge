@@ -1,7 +1,7 @@
 // This part of the realm is for all the functions that'll show the
 // content of the realm in the gno.land website
 
-package stackovergnotools
+package gnowledgetools
 
 import (
 	"time"
@@ -28,6 +28,16 @@ func ReadPreviewQuestion(q Question) string {
 	%d
   </div> <p style="padding-left:10px">%s</p></div>
 <p><small>by <a href="/r/dev/stackovergno:%s">%s</a>, on %s</small></p>`, q.Score, q.Question, q.Author.String(), q.Author.String(), q.CreatedOn.Format(time.RFC822))
+	return output
+}
+
+func ReadAllPreviews(tree avl.Tree) string {
+	var output string
+	tree.Iterate("", "", func(key string, valueInterface interface{}) bool {
+		value := valueInterface.(Question)
+		output += ReadPreviewQuestion(value) + "\n"
+		return false
+	})
 	return output
 }
 

@@ -1,6 +1,6 @@
 // The cornerstone of the realm
 
-package stackovergnotools
+package gnowledgetools
 
 import (
 	"std"

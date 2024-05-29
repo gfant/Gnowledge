@@ -9,7 +9,7 @@ import (
 
 	avl "gno.land/p/demo/avl"
 
-	stackovergnotools "gno.land/p/dev/stackovergnotools"
+	gnowledgetools "gno.land/p/dev/gnowledgetools"
 )
 
 // Errors for commands
@@ -24,7 +24,7 @@ var (
 var (
 	QuestionsCounter int
 	Questions        avl.Tree
-	LastestQuestions []stackovergnotools.Question
+	LastestQuestions []gnowledgetools.Question
 	// TopRatedQuestions PriorityQueue of Questions
 	site avl.Tree // Stores all the users in the realm
 )
@@ -32,12 +32,16 @@ var (
 func init() {
 	Questions = avl.Tree{}
 	site = avl.Tree{}
-	LastestQuestions = []stackovergnotools.Question{}
+	LastestQuestions = []gnowledgetools.Question{}
 	QuestionsCounter++
 }
 
 func Render(path string) string {
 	var output string
+	if path == "" {
+		output += gnowledgetools.ReadAllPreviews(Questions)
+		return output
+	}
 	parts := strings.Split(path, "/")
 	mainPart := parts[0]
 	if _, ok := strconv.Atoi(mainPart); ok == nil {
@@ -57,10 +61,10 @@ func MakeQuestion(question, topics string) int {
 	caller := std.GetOrigCaller().String()
 	_, ok := site.Get(caller)
 	if !ok {
-		panic(stackovergnotools.ErrRegisterFirst)
+		panic(gnowledgetools.ErrRegisterFirst)
 	}
 	topicsArr := strings.Split(topics, ",")
-	q := stackovergnotools.NewQuestion(question, topicsArr)
+	q := gnowledgetools.NewQuestion(question, topicsArr)
 	questionCounterString := strconv.Itoa(QuestionsCounter)
 	Questions.Set(questionCounterString, q)
 	QuestionsCounter++
@@ -74,7 +78,7 @@ func UpvoteQuestion(id int) {
 	if !ok {
 		panic(NoQuestionId)
 	}
-	q := qInterface.(stackovergnotools.Question)
+	q := qInterface.(gnowledgetools.Question)
 	// Can't upvote your own question
 	if caller == q.Author {
 		panic(InvalidAction)
@@ -90,7 +94,7 @@ func DownvoteQuestion(id int) {
 	if !ok {
 		panic(NoQuestionId)
 	}
-	q := qInterface.(stackovergnotools.Question)
+	q := qInterface.(gnowledgetools.Question)
 	// Can't downvote your own question
 	if caller == q.Author {
 		panic(InvalidAction)
@@ -104,8 +108,8 @@ func ReadQuestionById(id string) string {
 	if !ok {
 		panic(NoQuestionId)
 	}
-	q := qInterface.(stackovergnotools.Question)
-	questionText := stackovergnotools.ReadFormattedQuestion(q)
+	q := qInterface.(gnowledgetools.Question)
+	questionText := gnowledgetools.ReadFormattedQuestion(q)
 	return questionText
 }
 
@@ -115,7 +119,7 @@ func AnswerQuestion(response string, questionId int) {
 	if !ok {
 		panic(NoQuestionId)
 	}
-	q := qInterface.(stackovergnotools.Question)
+	q := qInterface.(gnowledgetools.Question)
 	q.AnswerQuestion(response)
 	Questions.Set(id, q)
 }
@@ -128,12 +132,12 @@ func UpvoteAnswer(qId, aId int) {
 	if !ok {
 		panic(NoQuestionId)
 	}
-	q := qInterface.(stackovergnotools.Question)
+	q := qInterface.(gnowledgetools.Question)
 	aInterface, ok := q.Answers.Get(aIdStr)
 	if !ok {
 		panic(NoAnswerId)
 	}
-	a := aInterface.(stackovergnotools.Answer)
+	a := aInterface.(gnowledgetools.Answer)
 	// Can't downvote your own answer
 	if caller == a.Author {
 		panic(InvalidAction)
@@ -151,12 +155,12 @@ func DownvoteAnswer(qId, aId int) {
 	if !ok {
 		panic(NoQuestionId)
 	}
-	q := qInterface.(stackovergnotools.Question)
+	q := qInterface.(gnowledgetools.Question)
 	aInterface, ok := q.Answers.Get(aIdStr)
 	if !ok {
 		panic(NoAnswerId)
 	}
-	a := aInterface.(stackovergnotools.Answer)
+	a := aInterface.(gnowledgetools.Answer)
 	// Can't downvote your own answer
 	if caller == a.Author {
 		panic(InvalidAction)

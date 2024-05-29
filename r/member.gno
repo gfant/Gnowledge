@@ -9,24 +9,24 @@ import (
 
 	avl "gno.land/p/demo/avl"
 
-	stackovergnotools "gno.land/p/dev/stackovergnotools"
+	gnowledgetools "gno.land/p/dev/gnowledgetools"
 )
 
 // Register yourself in the realm
 func Register() {
 	caller := std.GetOrigCaller().String()
-	site.Set(caller, stackovergnotools.Data{})
+	site.Set(caller, gnowledgetools.Data{})
 }
 
 func ReadUser(address string) string {
-	output := stackovergnotools.ReadUser(site, address)
+	output := gnowledgetools.ReadUser(site, address)
 	return output
 }
 
 func AddJob(current, Title, EmploymentType, Company, Location, StartDate, EndDate, JobDescription string) {
-	stackovergnotools.AddJob(current, Title, EmploymentType, Company, Location, StartDate, EndDate, JobDescription, site)
+	gnowledgetools.AddJob(current, Title, EmploymentType, Company, Location, StartDate, EndDate, JobDescription, site)
 }
 
 func AddNetwork(network, path string) {
-	stackovergnotools.AddNetwork(network, path, site)
+	gnowledgetools.AddNetwork(network, path, site)
 }
