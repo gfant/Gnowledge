@@ -19,7 +19,7 @@ func ReadFormattedQuestion(q Question) string {
 	output += ufmt.Sprintf(`<div style="display:flex; flex-direction:row; align-items: center;"><div style="border: 1px solid white; padding: 10px; width: fit-content"> 
 	%d
   </div> <p style="padding-left:10px">%s</p></div>
-<p><small>by <a href="/r/dev/stackovergno:%s">%s</a>, on %s</small></p>`, q.Score, q.Question, q.Author.String(), q.Author.String(), q.CreatedOn.Format(time.RFC822))
+<p><small>by <a href="/r/dev/gnowledge:%s">%s</a>, on %s</small></p>`, q.Score, q.Question, q.Author.String(), q.Author.String(), q.CreatedOn.Format(time.RFC822))
 	if q.Answers.Size() > 0 {
 		number := strconv.Itoa(q.Answers.Size())
 		output += ufmt.Sprintf("<p>%s answers<p>", number)
@@ -30,10 +30,10 @@ func ReadFormattedQuestion(q Question) string {
 
 func ReadPreviewQuestion(qId int, q Question) string {
 	var output string
-	output += ufmt.Sprintf(`<a href="/r/dev/stackovergno:%d"><div style="display:flex; flex-direction:row; align-items: center;"><div style="border: 1px solid white; padding: 10px; width: fit-content"> 
+	output += ufmt.Sprintf(`<a href="/r/dev/gnowledge:%d"><div style="display:flex; flex-direction:row; align-items: center;"><div style="border: 1px solid white; padding: 10px; width: fit-content"> 
 	%d
   </div> <p style="padding-left:10px">%s</p></div></a>
-<p><small>by <a href="/r/dev/stackovergno:%s">%s</a>, on %s</small></p>`, qId, q.Score, q.Question, q.Author.String(), q.Author.String(), q.CreatedOn.Format(time.RFC822))
+<p><small>by <a href="/r/dev/gnowledge:%s">%s</a>, on %s</small></p>`, qId, q.Score, q.Question, q.Author.String(), q.Author.String(), q.CreatedOn.Format(time.RFC822))
 	return output
 }
 
@@ -54,7 +54,7 @@ func ReadAllQuestionPreviews(tree avl.Tree) string {
 func ReadPreviewAnswer(answer Answer) string {
 	var output string
 	output += ufmt.Sprintf(`<hr/><p><%d> %s</p>
-	<p><small>by <a href="/r/dev/stackovergno:%s">%s</a>, on %s</small></p>`, answer.Score, answer.response, answer.Author, answer.Author, answer.CreatedOn)
+	<p><small>by <a href="/r/dev/gnowledge:%s">%s</a>, on %s</small></p>`, answer.Score, answer.Response, answer.Author, answer.Author, answer.CreatedOn)
 	return output
 }
 

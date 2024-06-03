@@ -1,4 +1,4 @@
-package stackovergno
+package gnowledge
 
 import (
 	"std"
@@ -18,6 +18,7 @@ var (
 	NoAnswerId      = "No Answer with given Id"
 	InvalidAction   = "Action not allowed"
 	UnexpectedError = "Unexpected Error"
+	ErrNoData       = "No data of this user"
 )
 
 // Variables to use in the realm
@@ -170,4 +171,9 @@ func DownvoteAnswer(qId, aId int) {
 	a.Score--
 	q.Answers.Set(aIdStr, a)
 	Questions.Set(qIdStr, q)
+}
+
+func GetQuestions() string {
+	qs := jsonAllQuestions(Questions)
+	return qs
 }
