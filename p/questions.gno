@@ -19,11 +19,11 @@ type Question struct {
 	Topics    []string    // Topics that relate to the question. This can be removed by consensus by other users
 	CreatedOn time.Time   // Date of creaton
 	Answers   avl.Tree    // Answers of other members
-	AnswersId int         // Answers of other members
+	AnswersId int         // Counter for answer in the AVL Tree
 }
 
 type Answer struct {
-	response  string      // content of answer
+	Response  string      // content of answer
 	Score     int         // Score of the answer
 	Author    std.Address // Author of the answer
 	CreatedOn time.Time   // Date of creaton
@@ -44,7 +44,7 @@ func NewQuestion(question string, topics []string) Question {
 
 func (q Question) AnswerQuestion(response string) {
 	newAnswer := Answer{
-		response:  response,
+		Response:  response,
 		Author:    std.GetOrigCaller(),
 		CreatedOn: time.Now(),
 		Score:     1,
