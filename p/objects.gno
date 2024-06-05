@@ -13,21 +13,22 @@ import (
 	ufmt "gno.land/p/demo/ufmt"
 )
 
-func JSONQuestion(q Question) string {
+func JSONQuestion(q Question, id string) string {
 	topics := "[" + strings.Join(q.Topics, ",") + "]"
 	json := ufmt.Sprintf(`
 	{"question":"%s",
 	"score":%d,
 	"author":"%s",
 	"createdOn":"%s",
-	"topics":"%s"}`, q.Question, q.Score, q.Author, q.CreatedOn.Format(time.RFC822), topics)
+	"id":"%s",
+	"topics":"%s"}`, q.Question, q.Score, q.Author, q.CreatedOn.Format(time.RFC822), id, topics)
 
 	return json
 }
 
 func JSONAnswer(a Answer) string {
 	json := ufmt.Sprintf(`
-	"response":"%s",
+	{"response":"%s",
 	"score":%d,
 	"author":"%s",
 	"createdOn":"%s"}
