@@ -115,16 +115,15 @@ func ReadQuestionById(id string) string {
 	return questionText
 }
 
-func AnswerQuestion(response string, questionId int) {
-	id := strconv.Itoa(questionId)
-	qInterface, ok := Questions.Get(id)
+func AnswerQuestion(response string, questionId string) {
+	qInterface, ok := Questions.Get(questionId)
 	if !ok {
 		panic(NoQuestionId)
 	}
 	q := qInterface.(gnowledgetools.Question)
 	q.AnswerQuestion(response)
 	q.AnswersId++
-	Questions.Set(id, q)
+	Questions.Set(questionId, q)
 }
 
 func UpvoteAnswer(qId, aId int) {
@@ -176,4 +175,14 @@ func DownvoteAnswer(qId, aId int) {
 func GetQuestions() string {
 	qs := jsonAllQuestions(Questions)
 	return qs
+}
+
+func GetAnswers(qId string) string {
+	qInterface, ok := Questions.Get(qId)
+	if !ok {
+		panic(ErrNoData)
+	}
+	q := qInterface.(gnowledgetools.Question)
+	as := jsonAllAnswers(q)
+	return as
 }
