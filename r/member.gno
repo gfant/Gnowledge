@@ -2,12 +2,6 @@ package gnowledge
 
 import (
 	"std"
-	"strconv"
-	"strings"
-
-	ufmt "gno.land/p/demo/ufmt"
-
-	avl "gno.land/p/demo/avl"
 
 	gnowledgetools "gno.land/p/dev/gnowledgetools"
 )

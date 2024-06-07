@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	ufmt "gno.land/p/demo/ufmt"
-
 	avl "gno.land/p/demo/avl"
 )
 

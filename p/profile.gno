@@ -5,12 +5,9 @@
 package gnowledgetools
 
 import (
-	std "std"
-	"strconv"
-	"strings"
+	"std"
 
 	avl "gno.land/p/demo/avl"
-	ufmt "gno.land/p/demo/ufmt"
 )
 
 // Errors
